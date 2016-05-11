@@ -7,7 +7,7 @@ Gem::Specification.new do |spec|
   spec.name          = "codebreaker"
   spec.version       = Codebreaker::VERSION
   spec.authors       = ["Igor"]
-  spec.email         = ["igor.pogosian@small-team.com"]
+  spec.email         = ["bullet6666@mail.ru"]
 
   spec.summary       = %q{TODO: Write a short summary, because Rubygems requires one.}
   spec.description   = %q{TODO: Write a longer description or delete this line.}
