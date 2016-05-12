@@ -11,17 +11,18 @@ module Codebreaker
 
     def start
       @secret_code = code_generator
-      puts "Enter #{CODE_SIZE} numbers. Each num should be in range #{NUM_RANGE.to_s}.".green
+      puts "Enter #{CODE_SIZE} numbers.".green +
+               " Each num should be in range #{NUM_RANGE.to_s}.".green
       guess_num = gets.chomp
-      puts guess_num
       validate_guess_num(guess_num)
+      compare_input(guess_num.to_i)
     end
 
     private
 
     def code_generator
       code = []
-      CODE_SIZE.times{ code << rand(NUM_RANGE)}
+      CODE_SIZE.times { code << rand(NUM_RANGE) }
       code.join.to_i
     end
 
@@ -34,6 +35,19 @@ module Codebreaker
         puts e.message
         start
       end
+    end
+
+    def compare_input(num)
+      if num == @secret_code
+        puts "Congratulations!!! You won the game. ".yellow +
+                 "The code was #{num}.".yellow
+      else
+
+      end
+    end
+
+    def match_postion(num)
+
     end
   end
 end
