@@ -6,11 +6,12 @@ module Codebreaker
     NUM_RANGE = 1..6
 
     def initialize
-      @secret_code = code_generator
+      @secret_code = ''
     end
 
     def start
-      puts "Enter #{CODE_SIZE} numbers. Each num should be in range #{NUM_RANGE.to_s}."
+      @secret_code = code_generator
+      puts "Enter #{CODE_SIZE} numbers. Each num should be in range #{NUM_RANGE.to_s}.".green
       guess_num = gets.chomp
       puts guess_num
       validate_guess_num(guess_num)
@@ -26,8 +27,8 @@ module Codebreaker
 
     def validate_guess_num(num)
       begin
-        if num.length != CODE_SIZE || num.to_i == 0
-          raise "Should be #{CODE_SIZE} nums, instead #{num.length}."
+        if num.length != CODE_SIZE || !num.match(/[1-6]+/)
+          raise "Should be #{CODE_SIZE} nums, each num between #{NUM_RANGE}".red
         end
       rescue Exception => e
         puts e.message
