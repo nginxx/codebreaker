@@ -15,10 +15,7 @@ module Codebreaker
     end
 
     def start
-      if @attempts.size == ATTEMPTS
-        puts 'You\'ve exceeded the number of attempts.'.red
-        game_over
-      end
+      game_over(true) if @attempts.size == ATTEMPTS
       define_name if @name.empty?
       puts "Enter #{CODE_SIZE} numbers.".green +
                " Each num should be in range #{NUM_RANGE}.".green
@@ -45,8 +42,7 @@ module Codebreaker
     def validate(num = nil, name = nil)
       if !num.nil? && (num.length != CODE_SIZE || !num.match(/[1-6]+/))
         raise "Should be #{CODE_SIZE} nums, each num between #{NUM_RANGE}".red
-      end
-      if !name.nil? && !name.match(/[a-zA-Z]+/)
+      elsif !name.nil? && !name.match(/[a-zA-Z]+/)
         raise 'Enter correct name. Only letters.'
       end
     rescue => e
@@ -86,19 +82,18 @@ module Codebreaker
     def make_hint
       puts 'Need a hint ?(yes/no)'
       answer = gets.chomp
-      if answer == 'yes'
-        @hints << 1
-        puts @secret_code.chars.sample
-      end
+      return unless answer == 'yes'
+      @hints << 1
+      puts @secret_code.chars.sample
     end
 
-    def game_over
+    def game_over(fail = false)
       save_result
+      puts 'You\'ve exceeded the number of attempts.'.red if fail
       puts 'Do you want to proceed? (yes/no)'.green
       answer = gets.chomp
       if answer == 'yes'
-        @attempts = []
-        @hints = []
+        @attempts, @hints = []
         start
       else
         exec('exit')
@@ -107,8 +102,8 @@ module Codebreaker
 
     def save_result
       time = (Time.now - @start_time).to_i
-      result = {name: @name, attempts: @attempts.size, time: "#{time} sec"}
-      file = File.open("lib/codebreaker/results.json", 'a+')
+      result = { name: @name, attempts: @attempts.size, time: "#{time} sec" }
+      file = File.open('lib/codebreaker/results.json', 'a+')
       file.puts(result.to_json)
       file.close
     end
