@@ -1,8 +1,8 @@
 module Codebreaker
   # Logic game
   class Game
-    HINTS = 3
-    ATTEMPTS = 10
+    HINTS = 1
+    ATTEMPTS = 4
     CODE_SIZE = 4
     NUM_RANGE = 1..6
 
@@ -15,7 +15,7 @@ module Codebreaker
     end
 
     def start
-      if @attempts.size > ATTEMPTS
+      if @attempts.size == ATTEMPTS
         puts 'You\'ve exceeded the number of attempts.'.red
         game_over
       end
@@ -31,7 +31,7 @@ module Codebreaker
 
     def define_name
       puts 'Enter your name:'.green
-      name = gets
+      name = gets.chomp
       validate(nil, name)
       @name = name
     end
@@ -43,11 +43,11 @@ module Codebreaker
     end
 
     def validate(num = nil, name = nil)
-      unless num.nil? && (num.length == CODE_SIZE || num.match(/[1-6]+/))
+      if !num.nil? && (num.length != CODE_SIZE || !num.match(/[1-6]+/))
         raise "Should be #{CODE_SIZE} nums, each num between #{NUM_RANGE}".red
       end
-      unless name.nil? && name.match(/[a-zA-Z]+/)
-        raise 'Enter correct name. Only letters'
+      if !name.nil? && !name.match(/[a-zA-Z]+/)
+        raise 'Enter correct name. Only letters.'
       end
     rescue => e
       puts e.message
@@ -58,11 +58,11 @@ module Codebreaker
       if num == @secret_code
         puts 'Congratulations!!! You won the game. '.yellow +
                  "The code was #{num}.".yellow
-       game_over
+        game_over
       else
         @attempts << 1
         puts 'Try again. ' + match_position(num)
-        make_hint if @attempts.size < HINTS
+        make_hint if @hints.size < HINTS
         start
       end
     end
@@ -85,14 +85,17 @@ module Codebreaker
 
     def make_hint
       puts 'Need a hint ?(yes/no)'
-      answer = gets
-      puts @secret_code.sample if answer == 'yes'
+      answer = gets.chomp
+      if answer == 'yes'
+        @hints << 1
+        puts @secret_code.chars.sample
+      end
     end
 
     def game_over
       save_result
-      'Do you want to proceed? (yes/no)'.green
-      answer = gets
+      puts 'Do you want to proceed? (yes/no)'.green
+      answer = gets.chomp
       if answer == 'yes'
         @attempts = []
         @hints = []
@@ -103,9 +106,11 @@ module Codebreaker
     end
 
     def save_result
-      result = {name: @name, attempts: @attempts, time: @start_time - Time.now}
-      file = File.open("results.json", 'a+')
+      time = (Time.now - @start_time).to_i
+      result = {name: @name, attempts: @attempts.size, time: "#{time} sec"}
+      file = File.open("lib/codebreaker/results.json", 'a+')
       file.puts(result.to_json)
+      file.close
     end
   end
 end
