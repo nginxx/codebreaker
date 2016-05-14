@@ -30,6 +30,15 @@ module Codebreaker
       end
     end
 
+    def validate(rule, item)
+      case rule
+        when 'name'
+          item.match(/[a-zA-Z]+/)
+        when 'number'
+          item.match(/[1-6]+/) && item.length == CODE_SIZE
+      end
+    end
+
     private
 
     def code_generator
