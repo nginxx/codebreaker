@@ -1,13 +1,15 @@
 module Codebreaker
-# Class handles game API
+# Handles game API
   class Index
-    attr_reader :game
-
     def initialize
       @game = Game.new
     end
 
     def start
+      if @game.name.empty?
+        puts 'Enter your name:'.green
+        @game.name = gets.chomp
+      end
       puts "Enter #{Game::CODE_SIZE} numbers.".green +
                " Each num should be in range #{Game::NUM_RANGE}.".green
       guess_num = gets.chomp

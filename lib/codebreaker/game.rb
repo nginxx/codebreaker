@@ -6,44 +6,22 @@ module Codebreaker
     CODE_SIZE = 4
     NUM_RANGE = 1..6
 
+    attr_accessor :name
+
     def initialize
       @secret_code = code_generator
       @name = ''
       @attempts = []
       @hints = []
+      @win = false
       @start_time = Time.now
-      puts @secret_code
     end
-
-    # def define_name
-    #   puts 'Enter your name:'.green
-    #   name = gets.chomp
-    #   validate(nil, name)
-    #   @name = name
-    # end
-
-    def code_generator
-      code = []
-      CODE_SIZE.times { code << rand(NUM_RANGE) }
-      code.join
-    end
-
-    # def validate(num = nil, name = nil)
-    #   if !num.nil? && (num.length != CODE_SIZE || !num.match(/[1-6]+/))
-    #     raise "Should be #{CODE_SIZE} nums, each num between #{NUM_RANGE}".red
-    #   elsif !name.nil? && !name.match(/[a-zA-Z]+/)
-    #     raise 'Enter correct name. Only letters.'
-    #   end
-    # rescue => e
-    #   puts e.message
-    #   start
-    # end
 
     def compare_input(num)
-      check_attempts
+      return game_over if check_attempts
       if num == @secret_code
-        puts 'Congratulations!!! You won the game. '.yellow +
-                 "The code was #{@secret_code}.".yellow
+        puts 'Congratulations!!! You won the game. '.yellow
+        @win = true
         game_over
       else
         puts 'Try again. ' + match_position(num)
@@ -54,9 +32,16 @@ module Codebreaker
 
     private
 
+    def code_generator
+      code = []
+      CODE_SIZE.times { code << rand(NUM_RANGE) }
+      code.join
+    end
+
     def save_result
       time = (Time.now - @start_time).to_i
-      result = {name: @name, attempts: @attempts.size, time: "#{time} sec"}
+      result = {name: @name, attempts: @attempts.size,
+                hints: @hints.size, win: @win, time: "#{time} sec"}
       file = File.open('lib/codebreaker/results.json', 'a+')
       file.puts(result.to_json)
       file.close
@@ -89,8 +74,9 @@ module Codebreaker
     def check_attempts
       @attempts << 1
       return unless @attempts.size > ATTEMPTS
-      puts 'Game over! You\'ve exceeded the number of attempts.'.red
-      game_over
+      puts 'Game over! You\'ve exceeded the number of attempts. '.red +
+               "The code was #{@secret_code}.".red
+      true
     end
 
     def game_over
