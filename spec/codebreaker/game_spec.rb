@@ -2,23 +2,46 @@ require 'spec_helper'
 
 module Codebreaker
   RSpec.describe Game do
-    context "#start" do
+    context '#start' do
       let(:game) { Game.new }
-
       before do
-        game.start
+        game.instance_variable_set(:@secret_code, '1234')
       end
 
-      it "saves secret code" do
-        expect(game.instance_variable_get(:@secret_code)).not_to be_empty
-      end
-
-      it "saves 4 numbers secret code" do
-        expect(game.instance_variable_get(:@secret_code).size).to eq(4)
-      end
-
-      it "saves secret code with numbers from 1 to 6" do
+      it 'should create valid secret code' do
+        expect(game.instance_variable_get(:@secret_code).length).to eq(4)
         expect(game.instance_variable_get(:@secret_code)).to match(/[1-6]+/)
+      end
+      it 'should validate inputs' do
+        expect(game.validate('number', '111111')).to be_falsey
+        expect(game.validate('number', '1111')).to be_truthy
+        expect(game.validate('name', '11111')).to be_falsey
+        expect(game.validate('name', 'ivan')).to be_truthy
+      end
+      it 'compares num to code' do
+        expect(game.compare_input('1111')).to be_falsey
+        expect { game.compare_input('1234') }.to output(/Congratulations/).to_stdout
+      end
+      it 'matches position' do
+        expect(game.send(:match_position, '1555')).to eq('+')
+        expect(game.send(:match_position, '1234')).to eq('++++')
+        expect(game.send(:match_position, '1334')).to eq('+++')
+        expect(game.send(:match_position, '1146')).to eq('+-')
+      end
+
+      it 'should make hint' do
+        hints = game.instance_variable_get(:@hints)
+        expect { game.send(:make_hint) }.to change { hints.size }.by(1)
+      end
+
+      it 'should count attemts' do
+        attempts = game.instance_variable_get(:@attempts)
+        expect { game.send(:check_attempts) }.to change { attempts.size }.by(1)
+      end
+
+      it 'should create statistics file' do
+        game.send(:game_over)
+        expect(File.exist?('results.json')).to be true
       end
     end
   end

@@ -22,4 +22,3 @@ module Codebreaker
     end
   end
 end
-Codebreaker::Index.new.start

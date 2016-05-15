@@ -1,3 +1,5 @@
-require "codebreaker/version"
-require "codebreaker/game"
-require "codebreaker/index"
+require 'codebreaker/version'
+require 'json'
+require 'colorize'
+require 'codebreaker/game'
+require 'codebreaker/index'

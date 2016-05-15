@@ -49,9 +49,9 @@ module Codebreaker
 
     def save_result
       time = (Time.now - @start_time).to_i
-      result = {name: @name, attempts: @attempts.size,
+      result = {name: @name, secret_code: @secret_code, attempts: @attempts.size,
                 hints: @hints.size, win: @win, time: "#{time} sec"}
-      file = File.open('lib/codebreaker/results.json', 'a+')
+      file = File.open('results.json', 'a+')
       file.puts(result.to_json)
       file.close
     end
