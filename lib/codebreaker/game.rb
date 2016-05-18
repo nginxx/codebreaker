@@ -11,8 +11,8 @@ module Codebreaker
     def initialize
       @secret_code = code_generator
       @name = ''
-      @attempts = []
-      @hints = []
+      @attempts = 0
+      @hints = 0
       @win = false
       @start_time = Time.now
     end
@@ -25,7 +25,6 @@ module Codebreaker
         game_over
       else
         puts 'Try again. ' + match_position(num)
-        make_hint if @hints.size < HINTS
         false
       end
     end
@@ -33,9 +32,18 @@ module Codebreaker
     def validate(rule, item)
       case rule
         when 'name'
-          item.match(/[a-zA-Z]+/)
+          item =~ /^[a-zA-Z]+$/
         when 'number'
-          item.match(/[1-6]+/) && item.length == CODE_SIZE
+          item =~ /^[1-6]+$/ && item.length == CODE_SIZE
+      end
+    end
+
+    def make_hint
+      if @hints == HINTS
+        puts 'No hints available.'
+      else
+        @hints += 1
+        puts @secret_code.chars.sample
       end
     end
 
@@ -49,8 +57,8 @@ module Codebreaker
 
     def save_result
       time = (Time.now - @start_time).to_i
-      result = {name: @name, secret_code: @secret_code, attempts: @attempts.size,
-                hints: @hints.size, win: @win, time: "#{time} sec"}
+      result = {name: @name, secret_code: @secret_code, attempts: @attempts,
+                hints: @hints, win: @win, time: "#{time} sec"}
       file = File.open('results.json', 'a+')
       file.puts(result.to_json)
       file.close
@@ -60,9 +68,8 @@ module Codebreaker
       code = @secret_code.chars
       num = num.chars
       guess = num.map.with_index do |item, index|
-        next if item != code[index]
-        code[index] = nil
-        '+'
+        next unless item == code[index]
+        code[index] = nil; '+'
       end
       num.each do |item|
         next unless code.include?(item)
@@ -72,17 +79,9 @@ module Codebreaker
       guess.join
     end
 
-    def make_hint
-      puts 'Need a hint ?(yes/no)'
-      answer = gets.chomp
-      return unless answer == 'yes'
-      @hints << 1
-      puts @secret_code.chars.sample
-    end
-
     def check_attempts
-      @attempts << 1
-      return unless @attempts.size > ATTEMPTS
+      @attempts += 1
+      return unless @attempts > ATTEMPTS
       puts 'Game over! You\'ve exceeded the number of attempts. '.red +
                "The code was #{@secret_code}.".red
       true
