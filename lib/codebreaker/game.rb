@@ -31,10 +31,8 @@ module Codebreaker
 
     def validate(rule, item)
       case rule
-        when 'name'
-          item =~ /^[a-zA-Z]+$/
-        when 'number'
-          item =~ /^[1-6]+$/ && item.length == CODE_SIZE
+        when 'name' then item =~ /^[a-zA-Z]+$/
+        when 'number' then item =~ /^[1-6]+$/ && item.length == CODE_SIZE
       end
     end
 
