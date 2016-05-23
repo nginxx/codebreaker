@@ -11,8 +11,7 @@ module Codebreaker
     def initialize
       @secret_code = code_generator
       @name = ''
-      @attempts = 0
-      @hints = 0
+      @attempts = @hints = 0
       @win = false
       @start_time = Time.now
     end
@@ -31,18 +30,15 @@ module Codebreaker
 
     def validate(rule, item)
       case rule
-        when 'name' then item =~ /^[a-zA-Z]+$/
-        when 'number' then item =~ /^[1-6]+$/ && item.length == CODE_SIZE
+      when 'name' then item =~ /^[a-zA-Z]+$/
+      when 'number' then item =~ /^[1-6]+$/ && item.length == CODE_SIZE
       end
     end
 
     def make_hint
-      if @hints == HINTS
-        puts 'No hints available.'
-      else
-        @hints += 1
-        puts @secret_code.chars.sample
-      end
+      return puts 'No hints available.' if @hints == HINTS
+      @hints += 1
+      puts @secret_code.chars.sample
     end
 
     private
@@ -55,25 +51,19 @@ module Codebreaker
 
     def save_result
       time = (Time.now - @start_time).to_i
-      result = {name: @name, secret_code: @secret_code, attempts: @attempts,
-                hints: @hints, win: @win, time: "#{time} sec"}
-      file = File.open('results.json', 'a+')
-      file.puts(result.to_json)
-      file.close
+      result = { name: @name, secret_code: @secret_code, attempts: @attempts,
+                hints: @hints, win: @win, time: "#{time} sec" }
+      File.open('results.json', 'a+') { |f| f.puts(result.to_json) }
     end
 
     def match_position(num)
       code = @secret_code.chars
       num = num.chars
-      guess = num.map.with_index do |item, index|
-        next unless item == code[index]
-        code[index] = nil; '+'
+      guess = num.zip(code).map do |x, y|
+        next unless x == y
+        code[code.index(y)] = nil; '+'
       end
-      num.each do |item|
-        next unless code.include?(item)
-        guess << '-'
-        code.delete_at(code.index(item))
-      end
+      guess << '-' * (num & code).size
       guess.join
     end
 
