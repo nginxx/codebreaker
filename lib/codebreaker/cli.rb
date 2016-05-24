@@ -1,6 +1,6 @@
 module Codebreaker
-# Starts game
-  class Index
+# Console interface for game
+  class Cli
     def initialize
       @game = Game.new
     end

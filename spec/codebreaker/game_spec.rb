@@ -3,7 +3,6 @@ require 'spec_helper'
 module Codebreaker
   RSpec.describe Game do
     context '#start game' do
-      subject { Game.new }
       before do
         subject.instance_variable_set(:@secret_code, '1234')
         allow(subject).to receive(:gets).and_return('yes')
@@ -28,8 +27,8 @@ module Codebreaker
         expect { subject.compare_input('1234') }.to output(/Congratulations/).to_stdout
       end
       it 'should match position' do
-        inputs = %w(1555 1234 1334 1146 2323 4444 1656 3111)
-        result = %w(+ ++++ +++ +- -- + + --)
+        inputs = %w(1555 1234 1334 1146 2323 4444 1656 3111 1166 3456 6321 4521 2222)
+        result = %w(+ ++++ +++ +- -- + + -- + -- --- --- +)
         inputs.each_with_index do |val, key|
           expect(subject.send(:match_position, val)).to eq(result[key])
         end

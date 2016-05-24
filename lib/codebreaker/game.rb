@@ -1,5 +1,5 @@
 module Codebreaker
-  # Logic game
+  # Game API
   class Game
     HINTS = 1
     ATTEMPTS = 4
@@ -44,9 +44,7 @@ module Codebreaker
     private
 
     def code_generator
-      code = []
-      CODE_SIZE.times { code << rand(NUM_RANGE) }
-      code.join
+      Array.new(CODE_SIZE).map { rand(NUM_RANGE) }.join
     end
 
     def save_result
@@ -61,7 +59,7 @@ module Codebreaker
       num = num.chars
       guess = num.zip(code).map do |x, y|
         next unless x == y
-        code[code.index(y)] = nil; '+'
+        num -= [x]; code -= [y]; '+'
       end
       guess << '-' * (num & code).size
       guess.join
