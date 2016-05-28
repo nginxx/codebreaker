@@ -15,15 +15,14 @@ module Codebreaker
     private
 
     def ask_name
-      if @game.name.empty?
-        puts 'Enter your name:'.green
-        name = gets.chomp
-        unless @game.validate('name', name)
-          puts 'Enter valid name !'.red
-          start
-        end
-        @game.name = name
+      return unless @game.name.empty?
+      puts 'Enter your name:'.green
+      name = gets.chomp
+      unless @game.validate('name', name)
+      puts 'Enter valid name !'.red
+      start
       end
+      @game.name = name
     end
 
     def ask_number
